@@ -1,0 +1,18 @@
+PIL does not support .heic files out of the box.
+.heic files MUST be converted with pillow_heic library. An example below:
+
+"
+from pillow_heif import register_heif_opener
+from PIL import Image
+
+register_heif_opener()
+
+def load_heic_image(heic_file_path):
+    # obtain the image data
+    image = Image.open(heic_file_path)
+    return image
+    
+# Replace with your HEIC file path
+heic_file_path = 'foo.heic'
+image = load_heic_image(heic_file_path)
+"

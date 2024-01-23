@@ -1,0 +1,99 @@
+# GPTNutriCount Photo Selector
+
+GPTNutriCount assists users in counting calories and macronutrients based on photos of their meals taken throughout the day.
+
+GPTNutriCount Photo Selector is a component of GPTNutriCount. It is a command-line tool that finds photos in a specified folder, converts them to a supported image format if necessary, and uses OpenAI's GPT-4 Vision model to determine if the photo contains a food or drink item. If the photo does contain a food or drink item, it is kept in the target folder, which folder is also specified via a command line argument.
+
+GPTNutriCount Photo Selector only processes photos in the input folder created on a specific date, which is also provided as a command line argument. If this command line argument is omitted, the tool will find photos created on the current date.
+
+The process consists of several steps:
+1. Find all photos created on the specified date in the input folder, searching the folder recursively.
+2. Copy or convert all photos found in the input folder to a YYYY-MM-DD sub-folder in the target folder.
+3. Check all photos in the target sub-folder for the given date (YYYY-MM-DD) to determine if they contain a food or drink item.
+4. Delete files from the target folder that do not depict food or drink items.
+
+The tool MUST use OpenAI's `gpt-4-vision-preview` model.
+This model supports only PNG (.png), JPEG (.jpeg and .jpg), WEBP (.webp), and non-animated GIF (.gif) file formats. If an image file is not in one of these formats, the tool MUST convert it to .jpeg while copying it to the target date sub-folder. If the file is already in one of these formats, it MUST be copied to the target date sub-folder as is. The tool must support converting .heic format to .jpeg.
+
+The tool MUST be compatible with Linux, Windows, and Mac.
+Inside the target folder, the name of the sub-folder MUST follow the YYYY-MM-DD convention.
+Files in the input folder MUST remain intact.
+
+GPTNutriCount Photo Selector is designed for Python 3.11.
+
+Determining whether a photo contains a food or drink item is done through a request to GPT-4 with image analysis capabilities. Each OpenAI API request uploads one photo with the following prompt:
+
+"You are a nutritionist, tasked with selecting photos of food and drink items consumed during the day. The attached image may depict a specific food, drink, or nutritional content table. Your job is to determine if the image is one of these, or if it is a random photo not showing food, drink, or a nutrition table.
+
+Your answer MUST be either `FOOD` or `NOT FOOD`. 
+Drinks and nutritional value tables MUST also be categorized as `FOOD`.
+
+You MUST respond with only one of these expressions: `FOOD` or `NOT FOOD`."
+
+This prompt is in a separate .txt file in the project: nutricount-photo-select-prompt.txt. An additional command line argument allows to use a different file as the prompt.
+
+The tool MUST use single image upload based on the API documentation below:
+
+###
+
+Uploading base 64 encoded images
+If you have an image or set of images locally, you can pass those to the model in base 64 encoded format, here is an example of this in action:
+
+import base64
+import requests
+
+# OpenAI API Key
+api_key = "YOUR_OPENAI_API_KEY"
+
+# Function to encode the image
+def encode_image(image_path):
+  with open(image_path, "rb") as image_file:
+    return base64.b64encode(image_file.read()).decode('utf-8')
+
+# Path to your image
+image_path = "path_to_your_image.jpg"
+
+# Getting the base64 string
+base64_image = encode_image(image_path)
+
+headers = {
+  "Content-Type": "application/json",
+  "Authorization": f"Bearer {api_key}"
+}
+
+payload = {
+  "model": "gpt-4-vision-preview",
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "What’s in this image?"
+        },
+        {
+          "type": "image_url",
+          "image_url": {
+            "url": f"data:image/jpeg;base64,{base64_image}"
+          }
+        }
+      ]
+    }
+  ],
+  "max_tokens": 300
+}
+
+response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+
+print(response.json())
+
+###
+
+# Parsing the response
+
+The returning message can be parsed as follows:
+
+response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+
+print(response.json())
+message_text = response.json()['choices'][0]['message']['content']

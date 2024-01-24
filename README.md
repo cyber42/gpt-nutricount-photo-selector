@@ -1,6 +1,6 @@
 # GTPNutriCount Photo Selector Analyzer
 
-[gpt-engineer](https://github.com/gpt-engineer-org/gpt-engineer) generated project, case study, fully operational. gpt-engineer prompts used are in prompt00 and prompt01 files. prompt01 was executed using the `--improve` flag to `gpt-engineer`.
+[gpt-engineer](https://github.com/gpt-engineer-org/gpt-engineer) generated project, case study, fully operational. `gpt-engineer` prompts used are in `prompt00` and `prompt01` files. `prompt01` was executed using the `--improve` flag to `gpt-engineer`.
 
 ## Description
 

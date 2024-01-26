@@ -2,6 +2,7 @@ import os
 import shutil
 from image_converter import ImageConverter
 from file_utils import FileUtils
+import time
 
 class ImageProcessor:
     SUPPORTED_FORMATS = {'.png', '.jpeg', '.jpg', '.webp', '.gif'}
@@ -26,3 +27,7 @@ class ImageProcessor:
 
             if file_is_available and not openai_client.is_food_image(target_path):
                 FileUtils.delete_file(target_path)
+            elif file_is_available:
+                # Set the same creation time on target_path as the original photo file
+                original_stat = os.stat(photo)
+                os.utime(target_path, (original_stat.st_atime, original_stat.st_mtime))

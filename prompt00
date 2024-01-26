@@ -11,6 +11,7 @@ The process consists of several steps:
 2. Copy or convert all photos found in the input folder to a YYYY-MM-DD sub-folder in the target folder.
 3. Check all photos in the target sub-folder for the given date (YYYY-MM-DD) to determine if they contain a food or drink item.
 4. Delete files from the target folder that do not depict food or drink items.
+5. Set the same creation date for the files kept in the target folder as the files in the input folder.
 
 The tool MUST use OpenAI's `gpt-4-vision-preview` model.
 This model supports only PNG (.png), JPEG (.jpeg and .jpg), WEBP (.webp), and non-animated GIF (.gif) file formats. If an image file is not in one of these formats, the tool MUST convert it to .jpeg while copying it to the target date sub-folder. If the file is already in one of these formats, it MUST be copied to the target date sub-folder as is. The tool must support converting .heic format to .jpeg.

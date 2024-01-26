@@ -15,6 +15,7 @@ The prompt is specified in the file, which can be replaced to anything, hence al
 ## Usage
 To use the tool, run the following command in your terminal:
 
+    export OPENAI_API_KEY={your key}
     python -m main ~/Pictures/AllPhotos ~/Pictures/NutriCount --date '2024-01-23' --prompt_file 'nutricount-photo-select-prompt.txt'
 
 ## Requirements

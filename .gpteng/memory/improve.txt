@@ -1,0 +1,56 @@
+PLANNING:
+To support the conversion of `.heic` files using the `pillow_heif` library, we need to make the following changes to the `ImageConverter` class in `image_converter.py`:
+
+1. Import the `register_heif_opener` function from the `pillow_heif` library.
+2. Register the HEIF opener at the beginning of the script to ensure that the PIL Image class can work with `.heic` files.
+3. Modify the `convert_to_jpeg` method to check the file extension of the input image. If the file extension is `.heic`, we will use the `pillow_heif` library to open the image. Otherwise, we will use the existing PIL `Image.open` method.
+4. Update the exception handling to catch any additional exceptions that might be raised by the `pillow_heif` library.
+
+OUTPUT:
+```python
+image_converter.py
+<<<<<<< HEAD
+import PIL
+from PIL import Image
+import os
+=======
+import os
+from PIL import Image
+from pillow_heif import register_heif_opener
+register_heif_opener()
+>>>>>>> updated
+```
+
+```python
+image_converter.py
+<<<<<<< HEAD
+    def convert_to_jpeg(image_path, output_path):
+        print(f'Trying to convert {image_path} to JPEG...')
+        try:
+            with Image.open(image_path) as img:
+                rgb_im = img.convert('RGB')
+                rgb_im.save(output_path, 'JPEG')
+                return True
+        except PIL.UnidentifiedImageError:
+            print(f'Failed to convert {image_path} to JPEG, skipping.')
+            return False
+=======
+    def convert_to_jpeg(image_path, output_path):
+        file_extension = os.path.splitext(image_path)[1].lower()
+        print(f'Trying to convert {image_path} to JPEG...')
+        try:
+            if file_extension == '.heic':
+                with Image.open(image_path) as img:
+                    rgb_im = img.convert('RGB')
+            else:
+                with Image.open(image_path) as img:
+                    rgb_im = img.convert('RGB')
+            rgb_im.save(output_path, 'JPEG')
+            return True
+        except (PIL.UnidentifiedImageError, pillow_heif.UnidentifiedImageError):
+            print(f'Failed to convert {image_path} to JPEG, skipping.')
+            return False
+>>>>>>> updated
+```
+
+Please note that you will need to install the `pillow_heif` library to use this updated code. You can do this by adding `pillow_heif` to your `requirements.txt` file.
